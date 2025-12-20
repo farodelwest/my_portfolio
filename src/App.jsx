@@ -9,6 +9,23 @@ const FONT = "Helvetica, 'Helvetica Neue', sans-serif";
 const COLOR = "#ffffff";
 
 // ===============================
+//   MOBILE DETECTION
+// ===============================
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" && window.innerWidth <= breakpoint
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+// ===============================
 //   FLOATING IMAGES 3D
 // ===============================
 function FloatingImages3D({ images = [], freq = 0, bpm = 0, pulse = 0 }) {
@@ -439,7 +456,7 @@ function CymaticSphere({
 // ===============================
 //   UI — HEADER, TESTI, MENU
 // ===============================
-function AnimatedName({ mode, onClick }) {
+function AnimatedName({ mode, onClick, isMobile }) {
   const [expanded, setExpanded] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
   const [floatY, setFloatY] = useState(0);
@@ -482,27 +499,37 @@ function AnimatedName({ mode, onClick }) {
   }, [mode, firstLoad]);
 
   const matteoSpacing =
-    expanded === "full" ? "14.3vh" : expanded ? "1.2em" : "0.15em";
+    expanded === "full"
+      ? isMobile ? "6vh" : "14.3vh"
+      : expanded
+      ? "1.2em"
+      : "0.15em";
+
   const fariselliSpacing =
-    expanded === "full" ? "8.57vh" : expanded ? "1.2em" : "0.15em";
+    expanded === "full"
+      ? isMobile ? "4vh" : "8.57vh"
+      : expanded
+      ? "1.2em"
+      : "0.15em";
 
   return (
     <div
       onClick={onClick}
       style={{
         position: "absolute",
-        top: `calc(3vh + ${mode === 2 ? floatY : 0}vh)`,
+        top: isMobile
+          ? "4vh"
+          : `calc(3vh + ${mode === 2 ? floatY : 0}vh)`,
         left: "51.2%",
         transform: "translateX(-50%) translateZ(0)",
         color: "#ffffff",
         fontFamily: FONT,
-        fontSize: "2rem",
+        fontSize: isMobile ? "1.4rem" : "2rem",
         fontWeight: 300,
         lineHeight: "0.3em",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "0.6em",
         zIndex: 9,
         cursor: "pointer",
         userSelect: "none",
@@ -510,9 +537,11 @@ function AnimatedName({ mode, onClick }) {
         filter: mode === 2 ? "url(#global-warp)" : "none",
       }}
     >
+      {/* MATTEO */}
       <div
         style={{
           display: "inline-block",
+          marginBottom: isMobile ? "0.4em" : "0.6em",
           transform:
             expanded === "full"
               ? "translateX(3vw)"
@@ -526,13 +555,15 @@ function AnimatedName({ mode, onClick }) {
           style={{
             letterSpacing: matteoSpacing,
             whiteSpace: "nowrap",
-            transition: "letter-spacing 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition:
+              "letter-spacing 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           M A T T E O
         </span>
       </div>
 
+      {/* FARISELLI */}
       <div
         style={{
           display: "inline-block",
@@ -549,7 +580,8 @@ function AnimatedName({ mode, onClick }) {
           style={{
             letterSpacing: fariselliSpacing,
             whiteSpace: "nowrap",
-            transition: "letter-spacing 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition:
+              "letter-spacing 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           F A R I S E L L I
@@ -559,7 +591,7 @@ function AnimatedName({ mode, onClick }) {
   );
 }
 
-function AboutText({ visible }) {
+function AboutText({ visible, isMobile }) {
   const variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -583,13 +615,13 @@ function AboutText({ visible }) {
             top: "50%",
             left: "52%",
             transform: "translate(-52%, -50%)",
-            width: "clamp(300px, 60vw, 600px)",
+            width: isMobile ? "85vw" : "clamp(300px, 60vw, 600px)",
             color: "#ffffff",
             fontFamily: "Helvetica Neue, sans-serif",
             fontWeight: 200,
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.95rem" : "1rem",
             letterSpacing: "0.04em",
-            lineHeight: "1.65em",
+            lineHeight: isMobile ? "1.55em" : "1.65em",
             textAlign: "center",
             zIndex: 8,
             userSelect: "none",
@@ -615,7 +647,7 @@ function AboutText({ visible }) {
   );
 }
 
-function ContactsText({ visible }) {
+function ContactsText({ visible, isMobile }) {
   const variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { delay: 1, duration: 0.2 } },
@@ -625,57 +657,41 @@ function ContactsText({ visible }) {
   return (
     <AnimatePresence mode="wait">
       {visible && (
-        <>
+        isMobile ? (
+          // =========================
+          // MOBILE LAYOUT (STACK)
+          // =========================
           <motion.div
-            key="contacts-left"
+            key="contacts-mobile"
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="exit"
             style={{
               position: "absolute",
-              top: "50%",
-              left: "2%",
-              transform: "translateY(-50%)",
+              top: "55%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "85vw",
               color: "#ffffff",
               fontFamily: "Helvetica Neue, sans-serif",
               fontWeight: 200,
               fontSize: "0.95rem",
               letterSpacing: "0.04em",
-              lineHeight: "1.7em",
-              textAlign: "left",
-              width: "260px",
+              lineHeight: "1.8em",
+              textAlign: "center",
               userSelect: "none",
               zIndex: 8,
             }}
           >
-            Contact me for collaborations in products and graphics design,
-            exhibitions, live sets and events or just to share an idea.
-          </motion.div>
+            <div style={{ marginBottom: "1.6em" }}>
+              Contact me for collaborations in product and graphic design,
+              exhibitions, live sets and events or just to share an idea.
+            </div>
 
-          <motion.div
-            key="contacts-text"
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "90.7%",
-              transform: "translate(-50%, -50%)",
-              color: "#ffffff",
-              fontFamily: "Helvetica Neue, sans-serif",
-              fontWeight: 200,
-              fontSize: "1rem",
-              letterSpacing: "0.04em",
-              lineHeight: "2em",
-              textAlign: "right",
-              zIndex: 8,
-              userSelect: "none",
-            }}
-          >
-            <div> +39 349 059 5551</div>
+            <div style={{ marginBottom: "0.6em" }}>
+              +39 349 059 5551
+            </div>
 
             <a
               href="mailto:matteo.fariselli@hotmail.com"
@@ -683,6 +699,7 @@ function ContactsText({ visible }) {
                 color: "#ffffff",
                 textDecoration: "none",
                 display: "block",
+                marginBottom: "1em",
               }}
             >
               matteo.fariselli@hotmail.com
@@ -694,12 +711,8 @@ function ContactsText({ visible }) {
               rel="noopener noreferrer"
               style={{
                 display: "inline-block",
-                marginTop: "0.8em",
-                opacity: 0.8,
-                transition: "opacity 0.3s ease",
+                opacity: 0.85,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.8)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -727,7 +740,114 @@ function ContactsText({ visible }) {
               </svg>
             </a>
           </motion.div>
-        </>
+        ) : (
+          // =========================
+          // DESKTOP LAYOUT (ORIGINALE)
+          // =========================
+          <>
+            <motion.div
+              key="contacts-left"
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "2%",
+                transform: "translateY(-50%)",
+                color: "#ffffff",
+                fontFamily: "Helvetica Neue, sans-serif",
+                fontWeight: 200,
+                fontSize: "0.95rem",
+                letterSpacing: "0.04em",
+                lineHeight: "1.7em",
+                textAlign: "left",
+                width: "260px",
+                userSelect: "none",
+                zIndex: 8,
+              }}
+            >
+              Contact me for collaborations in products and graphics design,
+              exhibitions, live sets and events or just to share an idea.
+            </motion.div>
+
+            <motion.div
+              key="contacts-right"
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "90.7%",
+                transform: "translate(-50%, -50%)",
+                color: "#ffffff",
+                fontFamily: "Helvetica Neue, sans-serif",
+                fontWeight: 200,
+                fontSize: "1rem",
+                letterSpacing: "0.04em",
+                lineHeight: "2em",
+                textAlign: "right",
+                zIndex: 8,
+                userSelect: "none",
+              }}
+            >
+              <div>+39 349 059 5551</div>
+
+              <a
+                href="mailto:matteo.fariselli@hotmail.com"
+                style={{
+                  color: "#ffffff",
+                  textDecoration: "none",
+                  display: "block",
+                }}
+              >
+                matteo.fariselli@hotmail.com
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/matteo-fariselli"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  marginTop: "0.8em",
+                  opacity: 0.8,
+                  transition: "opacity 0.3s ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.8)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect
+                    x="2"
+                    y="2"
+                    width="20"
+                    height="20"
+                    rx="2"
+                    ry="2"
+                    fill="rgba(255,255,255,0.15)"
+                  />
+                  <path d="M8 11v5" />
+                  <path d="M8 8h.01" />
+                  <path d="M12 16v-5a2 2 0 0 1 4 0v5" />
+                </svg>
+              </a>
+            </motion.div>
+          </>
+        )
       )}
     </AnimatePresence>
   );
@@ -846,6 +966,7 @@ function ProjectTypes({ visible, onHover, onBgChange }) {
 //   APP PRINCIPALE
 // ===============================
 export default function App() {
+  const isMobile = useIsMobile();
   const [mode, setMode] = useState(0);
   const [showTypes, setShowTypes] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -862,8 +983,8 @@ export default function App() {
 
   const sphereColor = "#ffffff"; // sempre bianco
 
-  const left = -5.5;
-  const right = 5.5;
+const left = isMobile ? -2.2 : -5.5;
+const right = isMobile ? 2.2 : 5.5;
 
   const sections = [
     { label: "About", mode: 1 },
@@ -1071,7 +1192,13 @@ export default function App() {
       )}
 
       {/* CANVAS */}
-      <Canvas camera={{ position: [0, 0, 8], fov: 55 }}>
+      <Canvas
+  camera={{
+    position: isMobile ? [0, 0, 10.5] : [0, 0, 8],
+    fov: isMobile ? 65 : 55,
+  }}
+>
+
         <ambientLight intensity={0.9} />
         <directionalLight intensity={0.7} position={[3, 5, 6]} />
 
@@ -1125,12 +1252,14 @@ export default function App() {
       <div
         style={{
           position: "absolute",
-          bottom: "2vh",
+          bottom: isMobile
+  ? "calc(2vh + env(safe-area-inset-bottom))"
+  : "2vh",
           left: 0,
           width: "100vw",
           color: COLOR,
           fontWeight: 100,
-          fontSize: "1rem",
+          fontSize: isMobile ? "0.85rem" : "1rem",
           letterSpacing: "0.15em",
           fontFamily: FONT,
           zIndex: 9,
