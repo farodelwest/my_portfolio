@@ -247,7 +247,7 @@ mesh.current.rotation.copy(mesh.current.rotation);
 
   // SOLO ABOUT modifica l’orientamento
   if (mode === 1 && cT === 0) {
-    mesh.current.rotation.set(1.5, positionX < 0 ? 0 : -0.2, 0);
+    mesh.current.rotation.set(1.5, positionX < 0 ? 0 : 0, 0);
   }
 }
 
