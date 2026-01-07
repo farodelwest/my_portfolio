@@ -932,6 +932,7 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
       {visible && (
         <motion.div
           style={{
+            alignItems: "center",
             position: "absolute",
             top: isMobile ? "45%" : "38%",
             left: "50%",
