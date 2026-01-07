@@ -241,15 +241,6 @@ mesh.current.rotation.copy(mesh.current.rotation);
       
     }
 
-    if (mesh.current) {
-  // ORIENTAMENTO DI DEFAULT (vale per TUTTO)
-mesh.current.rotation.copy(mesh.current.rotation);
-
-  // SOLO ABOUT modifica l’orientamento
-  if (mode === 1 && cT === 0) {
-    mesh.current.rotation.set(1.5, positionX < 0 ? 0 : 0, 0);
-  }
-}
 
     // -------------------------------------------------
     // SCALA: piccola finché non clicchi, poi animazione
