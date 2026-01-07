@@ -825,8 +825,9 @@ function ContactsText({ visible, isMobile }) {
   style={{
     position: "absolute",
     top: "50%",
-    left: "90.7%",
-    transform: "translate(-50%, -50%)",
+    left: "98%",                // 👈 STESSO ASSE DI CONTACTS
+    transform: "translate(-100%, -50%)", // 👈 bordo destro ancorato
+    width: "260px",
     color: "#ffffff",
     fontFamily: "Helvetica Neue, sans-serif",
     fontWeight: 200,
@@ -838,9 +839,12 @@ function ContactsText({ visible, isMobile }) {
     userSelect: "none",
   }}
 >
+
   {/* TEXT */}
   <div style={{ marginBottom: "0.8em" }}>
-    LISTEN TO MY PERSONAL SOUND PROJECT
+<div>LISTEN TO</div>
+  <div>MY PERSONAL</div>
+  <div>SOUND PROJECT</div>
   </div>
 
   {/* ICONS */}
@@ -850,6 +854,7 @@ function ContactsText({ visible, isMobile }) {
       justifyContent: "flex-end",
       gap: "1.2em",
       alignItems: "center",
+      witdh: "10em",
     }}
   >
     {/* SoundCloud */}
@@ -938,9 +943,27 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
   ).map((p) => p.replace("/public", ""));
 
   const texts = [
-    { label: "Product Design", freq: 900, bpm: 70, images: productImages },
-    { label: "Graphic Design", freq: 450, bpm: 110, images: graphicImages },
-    { label: "Sound Design", freq: 180, bpm: 160, images: soundImages },
+    {
+      label: "Product Design",
+      freq: 900,
+      bpm: 70,
+      images: productImages,
+      pdf: "/pdfs/product-design-portfolio.pdf",
+    },
+    {
+      label: "Graphic Design",
+      freq: 450,
+      bpm: 110,
+      images: graphicImages,
+      pdf: "/pdfs/graphic-design-portfolio.pdf",
+    },
+    {
+      label: "Sound Design",
+      freq: 180,
+      bpm: 160,
+      images: soundImages,
+      pdf: "/pdfs/sound-design-portfolio.pdf",
+    },
   ];
 
   const activate = (t) => {
@@ -973,8 +996,10 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
           }}
         >
           {texts.map((t) => (
-            <div
+            <a
               key={t.label}
+              href={t.pdf}
+              download
               onClick={() => activate(t)}
               onMouseEnter={!isMobile ? () => activate(t) : undefined}
               onMouseLeave={!isMobile ? deactivate : undefined}
@@ -985,10 +1010,11 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
                 fontSize: "0.9rem",
                 letterSpacing: "0.25em",
                 cursor: "pointer",
+                textDecoration: "none",
               }}
             >
               {t.label}
-            </div>
+            </a>
           ))}
         </motion.div>
       )}
