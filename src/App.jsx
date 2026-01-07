@@ -12,14 +12,21 @@ const COLOR = "#ffffff";
 //   MOBILE DETECTION
 // ===============================
 function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.innerWidth <= breakpoint
-  );
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= breakpoint);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const check = () => {
+      setIsMobile(window.matchMedia(`(max-width: ${breakpoint}px)`).matches);
+    };
+
+    check();
+    window.addEventListener("resize", check);
+    window.addEventListener("orientationchange", check);
+
+    return () => {
+      window.removeEventListener("resize", check);
+      window.removeEventListener("orientationchange", check);
+    };
   }, [breakpoint]);
 
   return isMobile;
@@ -28,19 +35,27 @@ function useIsMobile(breakpoint = 768) {
 // ===============================
 //   FLOATING IMAGES 3D
 // ===============================
-function FloatingImages3D({ images = [], freq = 0, bpm = 0, pulse = 0 }) {
+function FloatingImages3D({
+  images = [],
+  freq = 0,
+  bpm = 0,
+  pulse = 0,
+  isMobile,
+}) {
   if (images.length === 1) return null;
 
-  const validImages = useMemo(
-    () => images.filter((p) => typeof p === "string" && p.length > 0),
-    [images]
-  );
+  const validImages = useMemo(() => {
+    const imgs = images.filter((p) => typeof p === "string" && p.length > 0);
+    return isMobile ? imgs.slice(0, 2) : imgs;
+  }, [images, isMobile]);
+
   if (validImages.length === 0) return null;
 
   const textures = useLoader(TextureLoader, validImages);
   const group = useRef();
 
-  const baseHeight = 3.2;
+  const baseHeight = isMobile ? 2.4 : 3.2;
+
   const planes = useMemo(() => {
     return textures.map((tex) => {
       const img = tex.image;
@@ -49,17 +64,17 @@ function FloatingImages3D({ images = [], freq = 0, bpm = 0, pulse = 0 }) {
       const aspect = w / h || 1;
       return { width: baseHeight * aspect, height: baseHeight };
     });
-  }, [textures]);
+  }, [textures, baseHeight]);
 
   const positions = useMemo(() => {
-    const spread = 4.7;
+    const spread = isMobile ? 3.2 : 4.7;
     return textures.map((_, i) => ({
       x: i % 2 === 0 ? -spread : spread,
       y: (Math.random() - 0.5) * 1.5,
       z: -0.25,
       phase: Math.random() * Math.PI * 2,
     }));
-  }, [textures]);
+  }, [textures, isMobile]);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -113,15 +128,15 @@ function FloatingImages3D({ images = [], freq = 0, bpm = 0, pulse = 0 }) {
         const pulseAmount =
           Math.sin(t * (2.0 + freqNorm * 1.5 + bpmNorm * 0.3)) *
           (1.0 - r) *
-          0.08;
+          (isMobile ? 0.05 : 0.08);
 
         arr[j] = x0;
         arr[j + 1] = y0;
-        arr[j + 2] = z0 + coneShape + centerRipple + edgeRipple + pulseAmount;
+        arr[j + 2] =
+          z0 + coneShape + centerRipple + edgeRipple + pulseAmount;
       }
 
       posAttr.needsUpdate = true;
-      geom.computeVertexNormals();
     });
   });
 
@@ -129,7 +144,14 @@ function FloatingImages3D({ images = [], freq = 0, bpm = 0, pulse = 0 }) {
     <group ref={group}>
       {textures.map((tex, i) => (
         <mesh key={i} position={[positions[i].x, positions[i].y, positions[i].z]}>
-          <planeGeometry args={[planes[i].width, planes[i].height, 90, 90]} />
+          <planeGeometry
+            args={[
+              planes[i].width,
+              planes[i].height,
+              isMobile ? 50 : 90,
+              isMobile ? 50 : 90,
+            ]}
+          />
           <meshStandardMaterial
             map={tex}
             roughness={1}
@@ -161,7 +183,7 @@ function CymaticSphere({
 }) {
   const mesh = useRef();
 
-  const geometry = useMemo(() => new THREE.SphereGeometry(0.5, 280, 280), [id]);
+  const geometry = useMemo(() => new THREE.SphereGeometry(0.5, 220, 220), [id]);
   const positionAttr = geometry.attributes.position;
   const originalPos = useMemo(() => positionAttr.array.slice(), []);
   const count = positionAttr.count;
@@ -212,11 +234,22 @@ function CymaticSphere({
     if (mesh.current) {
       if (mode === 3 || cT > 0.0001) {
         // durante tutta la morph verso/da CONTACTS tieni frontale
-        mesh.current.rotation.set(0, 0, 0);
+mesh.current.rotation.copy(mesh.current.rotation);
       } else {
-        mesh.current.rotation.set(1.5, 0.1, 0);
+        mesh.current.rotation.set(1.5, 0, 0);
       }
+      
     }
+
+    if (mesh.current) {
+  // ORIENTAMENTO DI DEFAULT (vale per TUTTO)
+mesh.current.rotation.copy(mesh.current.rotation);
+
+  // SOLO ABOUT modifica l’orientamento
+  if (mode === 1 && cT === 0) {
+    mesh.current.rotation.set(1.5, positionX < 0 ? 0 : -0.2, 0);
+  }
+}
 
     // -------------------------------------------------
     // SCALA: piccola finché non clicchi, poi animazione
@@ -264,7 +297,7 @@ function CymaticSphere({
 
     const target = [
       { r: 1, a: 3, amp: 0.2, s: 1.5 },
-      { r: 0.2, a: 6, amp: 0.4, s: 1.1 },
+      { r: 0.2, a: 6, amp: 0.4, s: 1 },
       { r: 3, a: 1, amp: 0.35, s: 8 },
       { r: 20, a: 1, amp: 0.9, s: 4 },
     ][mode];
@@ -317,7 +350,7 @@ function CymaticSphere({
         const speed      = 2.0;
 
         // fase leggermente diversa L/R per effetto stereo
-        const phase = u * Math.PI * 2.0 + t * speed + stereoSide * 0.8;
+        const phase = u * Math.PI * 2.0 + t * speed + stereoSide * 1.5;
 
         let X = (u - 0.5) * waveWidth;
         const baseY = Math.sin(phase) * waveHeight;
@@ -350,8 +383,8 @@ function CymaticSphere({
         Z += grain * 0.2 + dustZ;
 
         waveX = X;
-        waveY = Y;
-        waveZ = Z;
+        waveY = Z;
+        waveZ = Y;
       }
 
       // ======================================
@@ -862,7 +895,7 @@ function downloadFile(url, filename) {
   document.body.removeChild(link);
 }
 
-function ProjectTypes({ visible, onHover, onBgChange }) {
+function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
   const productImages = Object.keys(
     import.meta.glob("/public/images/productdesign/*.webp", { eager: true })
   ).map((p) => p.replace("/public", ""));
@@ -876,71 +909,45 @@ function ProjectTypes({ visible, onHover, onBgChange }) {
   ).map((p) => p.replace("/public", ""));
 
   const texts = [
-    {
-      label: "Product Design",
-      freq: 900,
-      bpm: 70,
-      images: productImages,
-      pdfUrl: "/pdfs/product-design-portfolio.pdf",
-      fileName: "Matteo_Fariselli_Product_Design.pdf",
-    },
-    {
-      label: "Graphic Design",
-      freq: 450,
-      bpm: 110,
-      images: graphicImages,
-      pdfUrl: "/pdfs/graphic-design-portfolio.pdf",
-      fileName: "Matteo_Fariselli_Graphic_Design.pdf",
-    },
-    {
-      label: "Sound Design",
-      freq: 180,
-      bpm: 160,
-      images: soundImages,
-      pdfUrl: "/pdfs/sound-design-portfolio.pdf",
-      fileName: "Matteo_Fariselli_Sound_Design.pdf",
-    },
+    { label: "Product Design", freq: 900, bpm: 70, images: productImages },
+    { label: "Graphic Design", freq: 450, bpm: 110, images: graphicImages },
+    { label: "Sound Design", freq: 180, bpm: 160, images: soundImages },
   ];
+
+  const activate = (t) => {
+    onHover(t.freq, t.bpm);
+    if (t.images.length > 0) {
+      const shuffled = [...t.images].sort(() => 0.5 - Math.random());
+      onBgChange(shuffled.slice(0, 2));
+    }
+  };
+
+  const deactivate = () => {
+    onHover(0, 0);
+    onBgChange([]);
+  };
 
   return (
     <AnimatePresence mode="wait">
       {visible && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
           style={{
             position: "absolute",
-            top: "38%",
-            left: "45%",
-            transform: "translateX(-50%, -50%)",
+            top: isMobile ? "45%" : "38%",
+            left: "50%",
+            transform: "translateX(-50%)",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            gap: "5rem",
+            gap: isMobile ? "3rem" : "5rem",
             zIndex: 8,
           }}
         >
           {texts.map((t) => (
             <div
               key={t.label}
-              onMouseEnter={() => {
-                onHover(t.freq, t.bpm);
-                if (t.images.length > 0) {
-                  const shuffled = [...t.images].sort(
-                    () => 0.5 - Math.random()
-                  );
-                  onBgChange(shuffled.slice(0, 2));
-                }
-              }}
-              onMouseLeave={() => {
-                onHover(0, 0);
-                onBgChange([]);
-              }}
-              onClick={() => {
-                downloadFile(t.pdfUrl, t.fileName);
-              }}
+              onClick={() => activate(t)}
+              onMouseEnter={!isMobile ? () => activate(t) : undefined}
+              onMouseLeave={!isMobile ? deactivate : undefined}
               style={{
                 color: "#fff",
                 fontFamily: "Helvetica, sans-serif",
@@ -1204,46 +1211,53 @@ const right = isMobile ? 2.2 : 5.5;
 
         {bgImages.length > 0 && (
           <FloatingImages3D
-            images={bgImages}
-            freq={hoverFreq}
-            bpm={hoverBpm}
-            pulse={window.lastPulse || 0}
-          />
+  images={bgImages}
+  freq={hoverFreq}
+  bpm={hoverBpm}
+  pulse={window.lastPulse || 0}
+  isMobile={isMobile}
+/>
+
         )}
 
         <CymaticSphere
-          id="left"
-          mode={mode}
-          color={sphereColor}
-          positionX={left}
-          splitProgress={splitProgress}
-          hoverFreq={hoverFreq}
-          hoverBpm={hoverBpm}
-          hasClicked={hasClicked}
-          contactsT={contactsT}
-        />
+  id="left"
+  mode={mode}
+  color={sphereColor}
+  positionX={left}
+  splitProgress={splitProgress}
+  hoverFreq={hoverFreq}
+  hoverBpm={hoverBpm}
+  hasClicked={hasClicked}
+  contactsT={contactsT}
+  isMobile={isMobile}
+/>
 
-        <CymaticSphere
-          id="right"
-          mode={mode}
-          color={sphereColor}
-          positionX={right}
-          splitProgress={splitProgress}
-          hoverFreq={hoverFreq}
-          hoverBpm={hoverBpm}
-          hasClicked={hasClicked}
-          contactsT={contactsT}
-        />
+<CymaticSphere
+  id="right"
+  mode={mode}
+  color={sphereColor}
+  positionX={right}
+  splitProgress={splitProgress}
+  hoverFreq={hoverFreq}
+  hoverBpm={hoverBpm}
+  hasClicked={hasClicked}
+  contactsT={contactsT}
+  isMobile={isMobile}
+/>
+
       </Canvas>
 
       <ProjectTypes
-        visible={showTypes}
-        onHover={(f, b) => {
-          setHoverFreq(f);
-          setHoverBpm(b);
-        }}
-        onBgChange={(arr) => setBgImages(arr)}
-      />
+  visible={showTypes}
+  onHover={(f, b) => {
+    setHoverFreq(f);
+    setHoverBpm(b);
+  }}
+  onBgChange={(arr) => setBgImages(arr)}
+  isMobile={isMobile}
+/>
+
 
       <AboutText visible={showAbout} />
       <ContactsText visible={mode === 3} />
