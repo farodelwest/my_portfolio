@@ -766,9 +766,10 @@ function ContactsText({ visible, isMobile }) {
           </motion.div>
         ) : (
           // =========================
-          // DESKTOP LAYOUT (ORIGINALE)
+          // DESKTOP LAYOUT
           // =========================
           <>
+            {/* ---------- LEFT: CONTACT INFO ---------- */}
             <motion.div
               key="contacts-left"
               variants={variants}
@@ -792,84 +793,121 @@ function ContactsText({ visible, isMobile }) {
                 zIndex: 8,
               }}
             >
-              Contact me for collaborations in products and graphics design,
-              exhibitions, live sets and events or just to share an idea.
-            </motion.div>
+              <div>
+                Contact me for collaborations in product and graphic design,
+                exhibitions, live sets and events or just to share an idea.
+              </div>
 
-            <motion.div
-              key="contacts-right"
-              variants={variants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "90.7%",
-                transform: "translate(-50%, -50%)",
-                color: "#ffffff",
-                fontFamily: "Helvetica Neue, sans-serif",
-                fontWeight: 200,
-                fontSize: "1rem",
-                letterSpacing: "0.04em",
-                lineHeight: "2em",
-                textAlign: "right",
-                zIndex: 8,
-                userSelect: "none",
-              }}
-            >
-              <div>+39 349 059 5551</div>
+              <div style={{ marginTop: "1.8em", lineHeight: "1.6em" }}>
+                <div>+39 349 059 5551</div>
 
-              <a
-                href="mailto:matteo.fariselli@hotmail.com"
-                style={{
-                  color: "#ffffff",
-                  textDecoration: "none",
-                  display: "block",
-                }}
-              >
-                matteo.fariselli@hotmail.com
-              </a>
-
-              <a
-                href="https://www.linkedin.com/in/matteo-fariselli"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "inline-block",
-                  marginTop: "0.8em",
-                  opacity: 0.8,
-                  transition: "opacity 0.3s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.8)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <a
+                  href="mailto:matteo.fariselli@hotmail.com"
+                  style={{
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    display: "block",
+                    marginTop: "0.4em",
+                  }}
                 >
-                  <rect
-                    x="2"
-                    y="2"
-                    width="20"
-                    height="20"
-                    rx="2"
-                    ry="2"
-                    fill="rgba(255,255,255,0.15)"
-                  />
-                  <path d="M8 11v5" />
-                  <path d="M8 8h.01" />
-                  <path d="M12 16v-5a2 2 0 0 1 4 0v5" />
-                </svg>
-              </a>
+                  matteo.fariselli@hotmail.com
+                </a>
+              </div>
             </motion.div>
+
+            {/* ---------- RIGHT: SOUND PROJECT ---------- */}
+            <motion.div
+  key="contacts-right"
+  variants={variants}
+  initial="hidden"
+  animate="visible"
+  exit="exit"
+  style={{
+    position: "absolute",
+    top: "50%",
+    left: "90.7%",
+    transform: "translate(-50%, -50%)",
+    color: "#ffffff",
+    fontFamily: "Helvetica Neue, sans-serif",
+    fontWeight: 200,
+    fontSize: "1rem",
+    letterSpacing: "0.04em",
+    lineHeight: "1.6em",
+    textAlign: "right",
+    zIndex: 8,
+    userSelect: "none",
+  }}
+>
+  {/* TEXT */}
+  <div style={{ marginBottom: "0.8em" }}>
+    LISTEN TO MY PERSONAL SOUND PROJECT
+  </div>
+
+  {/* ICONS */}
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "1.2em",
+      alignItems: "center",
+    }}
+  >
+    {/* SoundCloud */}
+    <a
+      href="https://on.soundcloud.com/Egfk9nNI8BgbWHBYaq"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "inline-block",
+        opacity: 0.8,
+        transition: "opacity 0.3s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+      onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.8)}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="white"
+      >
+        <path d="M17.5 10.5c-.3 0-.6 0-.9.1-.4-2.1-2.2-3.6-4.4-3.6-.6 0-1.2.1-1.7.4-.2-1.4-1.4-2.4-2.8-2.4-.9 0-1.6.4-2.1 1v10.5h11.7c1.8 0 3.2-1.4 3.2-3.2s-1.4-3.2-3.2-3.2z" />
+      </svg>
+    </a>
+
+    {/* Apple Music */}
+    <a
+      href="https://music.apple.com/it/artist/%CF%86-emme/1823261745"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "inline-block",
+        opacity: 0.75,
+        transition: "opacity 0.3s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+      onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.75)}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 18V5l10-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="16" cy="16" r="3" />
+      </svg>
+    </a>
+  </div>
+</motion.div>
+
           </>
         )
       )}
