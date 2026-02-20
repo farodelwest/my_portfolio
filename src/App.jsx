@@ -54,7 +54,7 @@ function FloatingImages3D({
   const textures = useLoader(TextureLoader, validImages);
   const group = useRef();
 
-  const baseHeight = isMobile ? 2.4 : 3.2;
+  const baseHeight = isMobile ? 1.6 : 2.4;
 
   const planes = useMemo(() => {
     return textures.map((tex) => {
