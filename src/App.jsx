@@ -931,11 +931,12 @@ function downloadFile(url, filename) {
 
 function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
   const productImages = Object.keys(
-    import.meta.glob("/public/images/productdesign/*.webp", { eager: true })
+    import.meta.glob("/public/images/graphicdesign/*.webp", { eager: true })
   ).map((p) => p.replace("/public", ""));
 
   const graphicImages = Object.keys(
-    import.meta.glob("/public/images/graphicdesign/*.webp", { eager: true })
+    import.meta.glob("/public/images/productdesign/*.webp", { eager: true })
+
   ).map((p) => p.replace("/public", ""));
 
   const soundImages = Object.keys(
@@ -944,21 +945,21 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
 
   const texts = [
     {
-      label: "Product Design",
+      label: "graphic design",
       freq: 900,
       bpm: 70,
       images: productImages,
-      pdf: "/pdfs/product-design-portfolio.pdf",
-    },
-    {
-      label: "Graphic Design",
-      freq: 450,
-      bpm: 110,
-      images: graphicImages,
       pdf: "/pdfs/graphic-design-portfolio.pdf",
     },
     {
-      label: "Sound Design",
+      label: "product design",
+      freq: 450,
+      bpm: 110,
+      images: graphicImages,
+      pdf: "/pdfs/product-design-portfolio.pdf",
+    },
+    {
+      label: "sound design",
       freq: 180,
       bpm: 160,
       images: soundImages,
@@ -1005,8 +1006,8 @@ function ProjectTypes({ visible, onHover, onBgChange, isMobile }) {
               onMouseLeave={!isMobile ? deactivate : undefined}
               style={{
                 color: "#fff",
-                fontFamily: "Helvetica, sans-serif",
-                fontWeight: 150,
+                fontFamily: "Helvetica Neue, sans-serif",
+                fontWeight: 200,
                 fontSize: "0.9rem",
                 letterSpacing: "0.25em",
                 cursor: "pointer",
