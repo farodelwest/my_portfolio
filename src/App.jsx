@@ -522,33 +522,36 @@ function AnimatedName({ mode, onClick, isMobile }) {
     return () => clearTimeout(timer);
   }, [mode, firstLoad]);
 
-  const matteoSpacing =
-    expanded === "full"
-      ? isMobile ? "6vh" : "14.3vh"
-      : expanded
-      ? "1.2em"
-      : "0.15em";
+ const matteoSpacing =
+  expanded === "full"
+    ? isMobile
+      ? "clamp(8px, 3.2vw, 18px)"
+      : "14.3vh"
+    : expanded
+    ? "1.2em"
+    : "0.15em";
 
-  const fariselliSpacing =
-    expanded === "full"
-      ? isMobile ? "4vh" : "8.57vh"
-      : expanded
-      ? "1.2em"
-      : "0.15em";
+const fariselliSpacing =
+  expanded === "full"
+    ? isMobile
+      ? "clamp(6px, 2.6vw, 14px)"
+      : "8.57vh"
+    : expanded
+    ? "1.2em"
+    : "0.15em";
 
   return (
     <div
       onClick={onClick}
       style={{
         position: "absolute",
-        top: isMobile
-          ? "4vh"
-          : `calc(3vh + ${mode === 2 ? floatY : 0}vh)`,
-        left: "51.2%",
+        top: isMobile ? "max(18px, env(safe-area-inset-top))" : `calc(3vh + ${mode === 2 ? floatY : 0}vh)`,
         transform: "translateX(-50%) translateZ(0)",
+        left: "48%",
+transform: "translateX(-50%) translateZ(0)",
         color: "#ffffff",
         fontFamily: FONT,
-        fontSize: isMobile ? "1.4rem" : "2rem",
+        fontSize: isMobile ? "clamp(18px, 5vw, 26px)" : "2rem",
         fontWeight: 300,
         lineHeight: "0.3em",
         display: "flex",
@@ -559,6 +562,7 @@ function AnimatedName({ mode, onClick, isMobile }) {
         userSelect: "none",
         transition: "top 0.6s ease-out",
         filter: mode === 2 ? "url(#global-warp)" : "none",
+        
       }}
     >
       {/* MATTEO */}
@@ -573,6 +577,7 @@ function AnimatedName({ mode, onClick, isMobile }) {
               ? "translateX(0)"
               : "translateX(-9vw)",
           transition: "transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
+          
         }}
       >
         <span
@@ -635,22 +640,31 @@ function AboutText({ visible, isMobile }) {
           animate="visible"
           exit="exit"
           style={{
-            position: "absolute",
-            top: "50%",
-            left: "52%",
-            transform: "translate(-52%, -50%)",
-            width: isMobile ? "85vw" : "clamp(300px, 60vw, 600px)",
-            color: "#ffffff",
-            fontFamily: "Helvetica Neue, sans-serif",
-            fontWeight: 200,
-            fontSize: isMobile ? "0.95rem" : "1rem",
-            letterSpacing: "0.04em",
-            lineHeight: isMobile ? "1.55em" : "1.65em",
-            textAlign: "center",
-            zIndex: 8,
-            userSelect: "none",
-            pointerEvents: "none",
-          }}
+  position: "absolute",
+  left: "50%",
+  top: isMobile ? "14vh" : "50%",
+  transform: isMobile ? "translateX(-50%)" : "translate(-52%, -50%)",
+
+  width: isMobile ? "min(92vw, 420px)" : "clamp(300px, 60vw, 600px)",
+  padding: isMobile ? "0 5vw" : "0",
+
+  color: "#ffffff",
+  fontFamily: "Helvetica Neue, sans-serif",
+  fontWeight: 200,
+
+  fontSize: isMobile ? "clamp(15px, 4vw, 18px)" : "1rem",
+  lineHeight: isMobile ? "1.55" : "1.65",
+  letterSpacing: "0.04em",
+
+  textAlign: isMobile ? "center" : "center",
+
+  zIndex: 8,
+  userSelect: "none",
+  pointerEvents: "none",
+
+  // IMPORTANT: evita che il testo finisca sotto al menu
+  paddingBottom: isMobile ? "calc(10vh + env(safe-area-inset-bottom))" : 0,
+}}
         >
 
           <p style={{ marginBottom: "1.4em" }}>
@@ -1191,15 +1205,16 @@ const right = isMobile ? 2.2 : 5.5;
 
       {/* HEADER */}
       <AnimatedName
-        mode={mode}
-        onClick={() => {
-          setSplit(false);
-          setShowTypes(false);
-          setShowAbout(false);
-          setMode(0);
-          setBgImages([]);
-        }}
-      />
+  mode={mode}
+  onClick={() => {
+    setSplit(false);
+    setShowTypes(false);
+    setShowAbout(false);
+    setMode(0);
+    setBgImages([]);
+  }}
+  isMobile={isMobile}
+/>
 
       {/* PAYOFF (HOME) */}
       {mode === 0 && (
@@ -1316,8 +1331,8 @@ const right = isMobile ? 2.2 : 5.5;
 />
 
 
-      <AboutText visible={showAbout} />
-      <ContactsText visible={mode === 3} />
+      <AboutText visible={showAbout} isMobile={isMobile} />
+      <ContactsText visible={mode === 3} isMobile={isMobile} />
 
       {/* MENU */}
       <div
